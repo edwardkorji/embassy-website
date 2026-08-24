@@ -5,7 +5,7 @@ function Intro() {
 
       <h2>
         A nation of
-        <span> resiliance, unity</span>
+        <span> resilience, unity</span>
         and possibility.
       </h2>
 

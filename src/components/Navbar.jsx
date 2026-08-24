@@ -1,8 +1,38 @@
-import { Menu } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Menu, X } from "lucide-react";
+
+const links = [
+  { href: "#about", label: "About" },
+  { href: "#services", label: "Services" },
+  { href: "#news", label: "News" },
+  { href: "#diplomacy", label: "Diplomacy" },
+  { href: "#contact", label: "Contact" },
+];
 
 function Navbar() {
+  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 80);
+    onScroll();
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
+
   return (
-    <nav className="navbar">
+    <nav
+      className={`navbar ${scrolled ? "navbar-scrolled" : ""} ${
+        menuOpen ? "navbar-menu-open" : ""
+      }`}
+    >
       <div className="navbar-logo">
         <div className="flag-mark">
           <span className="green"></span>
@@ -17,16 +47,33 @@ function Navbar() {
       </div>
 
       <div className="navbar-links">
-        <a href="#about">About</a>
-        <a href="#services">Services</a>
-        <a href="#news">News</a>
-        <a href="#diplomacy">Diplomacy</a>
-        <a href="#contact">Contact</a>
+        {links.map((link) => (
+          <a href={link.href} key={link.href}>
+            {link.label}
+          </a>
+        ))}
       </div>
 
-      <button className="menu-button">
-        <Menu size={24} />
+      <button
+        className="menu-button"
+        onClick={() => setMenuOpen((open) => !open)}
+        aria-label={menuOpen ? "Close menu" : "Open menu"}
+        aria-expanded={menuOpen}
+      >
+        {menuOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
+
+      <div className={`mobile-menu ${menuOpen ? "open" : ""}`}>
+        {links.map((link) => (
+          <a
+            href={link.href}
+            key={link.href}
+            onClick={() => setMenuOpen(false)}
+          >
+            {link.label}
+          </a>
+        ))}
+      </div>
     </nav>
   );
 }
