@@ -1,28 +1,19 @@
-import Navbar from "./components/Navbar";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import Hero from "./sections/Hero";
-import Intro from "./sections/Intro";
-import Services from "./sections/Services";
-import Team from "./sections/Team";
-import News from "./sections/News";
-import Diplomacy from "./sections/Diplomacy";
-import Contact from "./sections/Contact";
+import Navbar from "./components/Navbar";
+import Home from "./pages/Home";
+import Publications from "./pages/Publications";
 
 function App() {
   return (
-    <>
+    <BrowserRouter>
       <Navbar />
 
-      <main>
-        <Hero />
-        <Intro />
-        <Services />
-        <Team />
-        <News />
-        <Diplomacy />
-        <Contact />
-      </main>
-    </>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/publications" element={<Publications />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

@@ -14,6 +14,16 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Publications (monthly reports / academic articles) are public-read.
+    // The stub doc is created by the Storage-triggered Cloud Function, and
+    // an admin fills in the summary/author/type by hand in the Firebase
+    // Console — both paths use Admin SDK / IAM access and bypass these
+    // rules, so no client write path is granted here either.
+    match /publications/{publicationId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }

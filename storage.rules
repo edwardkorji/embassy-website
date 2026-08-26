@@ -1,0 +1,18 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Publications (reports/articles) are public-read files; they're only
+    // ever written by an admin through the Firebase Console (which uses
+    // project-owner IAM permissions and bypasses these rules entirely), so
+    // no client write path needs to be granted here.
+    match /publications/{allPaths=**} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
