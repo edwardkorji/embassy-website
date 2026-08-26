@@ -4,6 +4,7 @@ import { Menu, X } from "lucide-react";
 const links = [
   { href: "#about", label: "About" },
   { href: "#services", label: "Services" },
+  { href: "#team", label: "Team" },
   { href: "#news", label: "News" },
   { href: "#diplomacy", label: "Diplomacy" },
   { href: "#contact", label: "Contact" },
@@ -33,7 +34,12 @@ function Navbar() {
         menuOpen ? "navbar-menu-open" : ""
       }`}
     >
-      <div className="navbar-logo">
+      <a
+        href="#hero"
+        className="navbar-logo"
+        onClick={() => setMenuOpen(false)}
+        aria-label="Go to home"
+      >
         <div className="flag-mark">
           <span className="green"></span>
           <span className="white"></span>
@@ -44,7 +50,7 @@ function Navbar() {
           <p className="logo-country">SIERRA LEONE</p>
           <p className="logo-subtitle">Embassy in Ethiopia</p>
         </div>
-      </div>
+      </a>
 
       <div className="navbar-links">
         {links.map((link) => (
