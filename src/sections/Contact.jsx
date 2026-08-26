@@ -1,3 +1,6 @@
+import CopyEmailButton from "../components/CopyEmailButton";
+import SocialLinks from "../components/SocialLinks";
+
 function Contact() {
   return (
     <section className="contact" id="contact">
@@ -20,10 +23,19 @@ function Contact() {
             <a className="contact-line" href="tel:+251113710033">
               Phone: +251 11 371 0033
             </a>
-            <a className="contact-line" href="mailto:salonembadd@yahoo.co.uk">
-              Email: salonembadd@yahoo.co.uk
-            </a>
+            <CopyEmailButton
+              email="slembassyaddis@gmail.com"
+              className="contact-line"
+              ariaLabel="Copy the Embassy's email address"
+            >
+              Email: slembassyaddis@gmail.com
+            </CopyEmailButton>
           </div>
+
+          <SocialLinks
+            wrapClassName="contact-socials"
+            itemClassName="contact-social"
+          />
         </div>
 
         <div className="contact-hours">

@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import { db } from "../lib/firebase";
 
@@ -63,6 +64,43 @@ function ViewerModal({ publication, onClose }) {
 function Publications() {
   const [publications, setPublications] = useState(null);
   const [activePublication, setActivePublication] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const selectedAuthor = searchParams.get("author") || "";
+
+  const authors = useMemo(() => {
+    if (!publications) return [];
+    return [...new Set(publications.map((pub) => pub.author).filter(Boolean))].sort(
+      (a, b) => a.localeCompare(b)
+    );
+  }, [publications]);
+
+  const visiblePublications = useMemo(() => {
+    if (!publications) return [];
+    if (!selectedAuthor) return publications;
+    return publications.filter((pub) => pub.author === selectedAuthor);
+  }, [publications, selectedAuthor]);
+
+  // Real, live counts from Firestore — not fixed numbers, so these stay
+  // accurate as more publications get added.
+  const heroStats = useMemo(() => {
+    if (!publications || publications.length === 0) return [];
+    const reportCount = publications.filter((p) => p.type === "report").length;
+    const articleCount = publications.filter((p) => p.type === "article").length;
+    return [
+      { value: publications.length, label: "Publications" },
+      { value: reportCount, label: "Monthly Reports" },
+      { value: articleCount, label: "Academic Articles" },
+      { value: authors.length, label: "Contributing Staff" },
+    ];
+  }, [publications, authors]);
+
+  const handleAuthorChange = (author) => {
+    if (author) {
+      setSearchParams({ author });
+    } else {
+      setSearchParams({});
+    }
+  };
 
   useEffect(() => {
     if (!db) {
@@ -94,18 +132,35 @@ function Publications() {
   return (
     <main>
       <section className="publications-hero">
-        <p className="section-label">PUBLICATIONS</p>
+        <div className="publications-hero-inner">
+          <p className="section-label">PUBLICATIONS</p>
 
-        <h2>
-          Reports
-          <br />
-          <span>and academic work.</span>
-        </h2>
+          <h2>
+            Reports
+            <br />
+            <span>and academic work.</span>
+          </h2>
 
-        <p className="publications-intro">
-          Monthly activity reports from the Embassy, alongside academic
-          articles and papers shared by our staff.
-        </p>
+          <p className="publications-intro">
+            Monthly activity reports from the Embassy, alongside academic
+            articles and papers shared by our staff.
+          </p>
+
+          {heroStats.length > 0 && (
+            <div className="publications-floaters" aria-hidden="true">
+              {heroStats.map((stat) => (
+                <div className="publications-floater" key={stat.label}>
+                  <span className="publications-floater-value">
+                    {stat.value}
+                  </span>
+                  <span className="publications-floater-label">
+                    {stat.label}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </section>
 
       <section className="publications-list">
@@ -120,8 +175,44 @@ function Publications() {
         )}
 
         {publications && publications.length > 0 && (
-          <div className="publications-grid">
-            {publications.map((pub) => (
+          <>
+            <div className="publications-filter">
+              <p className="publications-filter-label">Filter by author</p>
+
+              <div className="publications-filter-pills">
+                <button
+                  type="button"
+                  className={`publications-filter-pill${
+                    selectedAuthor === "" ? " active" : ""
+                  }`}
+                  onClick={() => handleAuthorChange("")}
+                >
+                  All authors
+                </button>
+
+                {authors.map((author) => (
+                  <button
+                    type="button"
+                    key={author}
+                    className={`publications-filter-pill${
+                      selectedAuthor === author ? " active" : ""
+                    }`}
+                    onClick={() => handleAuthorChange(author)}
+                  >
+                    {author}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {visiblePublications.length === 0 && (
+              <p className="publications-status">
+                No publications from {selectedAuthor} yet.
+              </p>
+            )}
+
+            <div className="publications-grid">
+              {visiblePublications.map((pub) => (
               <div className="publication-card" key={pub.id}>
                 <span
                   className={`publication-tag publication-tag--${pub.type}`}
@@ -159,8 +250,9 @@ function Publications() {
                   </a>
                 </div>
               </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </>
         )}
       </section>
 

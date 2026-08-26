@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowDown } from "lucide-react";
+import SocialLinks from "../components/SocialLinks";
 
 function Hero() {
   const heroRef = useRef(null);
@@ -64,16 +65,19 @@ function Hero() {
           and connecting the people of Sierra Leone and Ethiopia.
         </motion.p>
 
-        <motion.a
-          href="#about"
-          className="hero-button"
+        <motion.div
+          className="hero-actions"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.85, ease: "easeOut" }}
         >
-          Discover the Embassy
-          <ArrowDown size={18} />
-        </motion.a>
+          <a href="#about" className="hero-button">
+            Discover the Embassy
+            <ArrowDown size={18} />
+          </a>
+
+          <SocialLinks wrapClassName="hero-socials" itemClassName="hero-social" />
+        </motion.div>
       </motion.div>
 
       <motion.div

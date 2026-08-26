@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 
 const links = [
@@ -32,6 +32,7 @@ function NavLink({ link, onClick }) {
 
 function Navbar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const hasDarkHero = location.pathname === "/";
 
   const [scrolled, setScrolled] = useState(!hasDarkHero);
@@ -56,6 +57,20 @@ function Navbar() {
     };
   }, [menuOpen]);
 
+  // Always land on the hero, regardless of scroll position or which page
+  // we're on — a plain <Link to="/"> only resets scroll if the browser
+  // happens to; this makes it deterministic every time.
+  const goToHero = (e) => {
+    e.preventDefault();
+    setMenuOpen(false);
+
+    if (location.pathname === "/") {
+      document.getElementById("hero")?.scrollIntoView({ block: "start" });
+    } else {
+      navigate("/#hero");
+    }
+  };
+
   return (
     <nav
       className={`navbar ${scrolled ? "navbar-scrolled" : ""} ${
@@ -63,9 +78,9 @@ function Navbar() {
       }`}
     >
       <Link
-        to="/"
+        to="/#hero"
         className="navbar-logo"
-        onClick={() => setMenuOpen(false)}
+        onClick={goToHero}
         aria-label="Go to home"
       >
         <div className="flag-mark">

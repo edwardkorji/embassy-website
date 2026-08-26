@@ -1,4 +1,5 @@
 import { useState } from "react";
+import CopyEmailButton from "../components/CopyEmailButton";
 
 const services = [
   {
@@ -6,7 +7,7 @@ const services = [
     content:
       "The Embassy provides consular assistance to Sierra Leonean nationals living in or visiting Ethiopia. As Sierra Leone's Permanent Mission to the African Union and the UN Economic Commission for Africa, it also supports government delegations and liaises with AU institutions on the country's behalf, and covers Zambia, Namibia, Malawi, Mozambique, Botswana, Madagascar and South Africa on a non-resident basis.",
     actions: [
-      { label: "Email the Embassy", href: "mailto:salonembadd@yahoo.co.uk" },
+      { label: "Copy the Embassy's email", email: "slembassyaddis@gmail.com" },
       { label: "Call +251 11 371 0033", href: "tel:+251113710033" },
     ],
   },
@@ -39,7 +40,7 @@ const services = [
     content:
       "Sierra Leone permits dual citizenship, so nationals living abroad are not required to give up another nationality they hold. The Embassy provides guidance on citizenship by birth, descent and registration for members of the diaspora in Ethiopia and the wider region.",
     actions: [
-      { label: "Email the Embassy", href: "mailto:salonembadd@yahoo.co.uk" },
+      { label: "Copy the Embassy's email", email: "slembassyaddis@gmail.com" },
     ],
   },
 ];
@@ -76,19 +77,31 @@ function Services() {
 
                   {service.actions && (
                     <div className="service-actions">
-                      {service.actions.map((action) => (
-                        <a
-                          className="service-action"
-                          href={action.href}
-                          key={action.label}
-                          {...(action.external
-                            ? { target: "_blank", rel: "noopener noreferrer" }
-                            : {})}
-                        >
-                          {action.label}
-                          <span aria-hidden="true">→</span>
-                        </a>
-                      ))}
+                      {service.actions.map((action) =>
+                        action.email ? (
+                          <CopyEmailButton
+                            email={action.email}
+                            className="service-action"
+                            ariaLabel={action.label}
+                            key={action.label}
+                          >
+                            {action.label}
+                            <span aria-hidden="true">→</span>
+                          </CopyEmailButton>
+                        ) : (
+                          <a
+                            className="service-action"
+                            href={action.href}
+                            key={action.label}
+                            {...(action.external
+                              ? { target: "_blank", rel: "noopener noreferrer" }
+                              : {})}
+                          >
+                            {action.label}
+                            <span aria-hidden="true">→</span>
+                          </a>
+                        )
+                      )}
                     </div>
                   )}
                 </div>
