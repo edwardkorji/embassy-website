@@ -65,20 +65,20 @@ function Publications() {
   const [publications, setPublications] = useState(null);
   const [activePublication, setActivePublication] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
-  const selectedAuthor = searchParams.get("author") || "";
+  const selectedCategory = searchParams.get("category") || "";
 
-  const authors = useMemo(() => {
+  const categories = useMemo(() => {
     if (!publications) return [];
-    return [...new Set(publications.map((pub) => pub.author).filter(Boolean))].sort(
+    return [...new Set(publications.map((pub) => pub.type).filter(Boolean))].sort(
       (a, b) => a.localeCompare(b)
     );
   }, [publications]);
 
   const visiblePublications = useMemo(() => {
     if (!publications) return [];
-    if (!selectedAuthor) return publications;
-    return publications.filter((pub) => pub.author === selectedAuthor);
-  }, [publications, selectedAuthor]);
+    if (!selectedCategory) return publications;
+    return publications.filter((pub) => pub.type === selectedCategory);
+  }, [publications, selectedCategory]);
 
   // Real, live counts from Firestore — not fixed numbers, so these stay
   // accurate as more publications get added.
@@ -86,17 +86,18 @@ function Publications() {
     if (!publications || publications.length === 0) return [];
     const reportCount = publications.filter((p) => p.type === "report").length;
     const articleCount = publications.filter((p) => p.type === "article").length;
+    const authorCount = new Set(publications.map((p) => p.author).filter(Boolean)).size;
     return [
-      { value: publications.length, label: "Publications" },
+      { value: publications.length, label: "Reports" },
       { value: reportCount, label: "Monthly Reports" },
       { value: articleCount, label: "Academic Articles" },
-      { value: authors.length, label: "Contributing Staff" },
+      { value: authorCount, label: "Contributing Staff" },
     ];
-  }, [publications, authors]);
+  }, [publications]);
 
-  const handleAuthorChange = (author) => {
-    if (author) {
-      setSearchParams({ author });
+  const handleCategoryChange = (category) => {
+    if (category) {
+      setSearchParams({ category });
     } else {
       setSearchParams({});
     }
@@ -133,7 +134,7 @@ function Publications() {
     <main>
       <section className="publications-hero">
         <div className="publications-hero-inner">
-          <p className="section-label">PUBLICATIONS</p>
+          <p className="section-label">REPORTS</p>
 
           <h2>
             Reports
@@ -170,36 +171,36 @@ function Publications() {
 
         {publications !== null && publications.length === 0 && (
           <p className="publications-status">
-            No publications yet — check back soon.
+            No reports yet — check back soon.
           </p>
         )}
 
         {publications && publications.length > 0 && (
           <>
             <div className="publications-filter">
-              <p className="publications-filter-label">Filter by author</p>
+              <p className="publications-filter-label">Filter by category</p>
 
               <div className="publications-filter-pills">
                 <button
                   type="button"
                   className={`publications-filter-pill${
-                    selectedAuthor === "" ? " active" : ""
+                    selectedCategory === "" ? " active" : ""
                   }`}
-                  onClick={() => handleAuthorChange("")}
+                  onClick={() => handleCategoryChange("")}
                 >
-                  All authors
+                  All categories
                 </button>
 
-                {authors.map((author) => (
+                {categories.map((category) => (
                   <button
                     type="button"
-                    key={author}
+                    key={category}
                     className={`publications-filter-pill${
-                      selectedAuthor === author ? " active" : ""
+                      selectedCategory === category ? " active" : ""
                     }`}
-                    onClick={() => handleAuthorChange(author)}
+                    onClick={() => handleCategoryChange(category)}
                   >
-                    {author}
+                    {TYPE_LABELS[category] || category}
                   </button>
                 ))}
               </div>
@@ -207,7 +208,7 @@ function Publications() {
 
             {visiblePublications.length === 0 && (
               <p className="publications-status">
-                No publications from {selectedAuthor} yet.
+                No reports in this category yet.
               </p>
             )}
 

@@ -11,6 +11,14 @@ service firebase.storage {
       allow write: if false;
     }
 
+    // Blog post photos: same pattern — upload directly through the
+    // Firebase Console into blogs/{postSlug}/, the ingestBlogPhoto Cloud
+    // Function (Admin SDK) picks them up and bypasses these rules.
+    match /blogs/{allPaths=**} {
+      allow read: if true;
+      allow write: if false;
+    }
+
     match /{allPaths=**} {
       allow read, write: if false;
     }

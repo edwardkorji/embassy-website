@@ -24,6 +24,15 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Blog posts follow the same pattern as publications: the
+    // ingestBlogPhoto Cloud Function (Admin SDK) creates the stub doc, and
+    // an admin fills in title/category/summary/body by hand in the
+    // Firestore console — both paths bypass these rules.
+    match /blogs/{blogId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }

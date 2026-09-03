@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import Hero from "../sections/Hero";
 import Intro from "../sections/Intro";
 import Services from "../sections/Services";
+import BlogCarousel from "../sections/BlogCarousel";
 import Team from "../sections/Team";
 import News from "../sections/News";
 import Diplomacy from "../sections/Diplomacy";
@@ -23,6 +24,7 @@ function Home() {
       <Hero />
       <Intro />
       <Services />
+      <BlogCarousel />
       <Team />
       <News />
       <Diplomacy />

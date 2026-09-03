@@ -1,5 +1,3 @@
-import { Link } from "react-router-dom";
-
 const team = [
   {
     name: "Alhaji M. Kamara",
@@ -7,7 +5,6 @@ const team = [
     image:
       "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80",
     linkedin: "#",
-    hasPublications: true,
   },
   {
     name: "Fatmata S. Koroma",
@@ -15,7 +12,6 @@ const team = [
     image:
       "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?auto=format&fit=crop&w=800&q=80",
     linkedin: "#",
-    hasPublications: true,
   },
   {
     name: "Ibrahim T. Sesay",
@@ -37,7 +33,6 @@ const team = [
     image:
       "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=800&q=80",
     linkedin: "#",
-    hasPublications: true,
   },
   {
     name: "Isata R. Turay",
@@ -98,15 +93,6 @@ function Team() {
                 </svg>
               </a>
             </div>
-
-            {member.hasPublications && (
-              <Link
-                className="team-publications-link nav-glow"
-                to={`/publications?author=${encodeURIComponent(member.name)}`}
-              >
-                View Publications
-              </Link>
-            )}
           </div>
         ))}
       </div>

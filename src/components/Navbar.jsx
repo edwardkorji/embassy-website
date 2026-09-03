@@ -3,17 +3,22 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 
 const links = [
-  { href: "/#about", label: "About" },
   { href: "/#services", label: "Services" },
   { href: "/#team", label: "Team" },
   { href: "/#news", label: "News" },
   { href: "/#diplomacy", label: "Diplomacy" },
   { href: "/#contact", label: "Contact" },
-  { to: "/publications", label: "Publications", glow: true },
+  // Blog and Reports both glow, offset by half the pulse cycle (see
+  // .nav-glow-delayed in index.css) so they alternate — one lit while the
+  // other is dark, then they swap.
+  { to: "/blog", label: "Blog", glow: true, glowDelay: true },
+  { to: "/publications", label: "Reports", glow: true },
 ];
 
 function NavLink({ link, onClick }) {
-  const className = link.glow ? "nav-glow" : undefined;
+  const className = [link.glow && "nav-glow", link.glowDelay && "nav-glow-delayed"]
+    .filter(Boolean)
+    .join(" ") || undefined;
 
   if (link.to) {
     return (

@@ -133,26 +133,35 @@ a {
 
   border-radius: 999px;
   pointer-events: none;
+  opacity: 1;
 
-  box-shadow: 0 0 12px 3px rgba(0, 114, 198, 0.85);
+  box-shadow: 0 0 16px 5px rgba(0, 114, 198, 1), 0 4px 10px rgba(0, 0, 0, 0.18);
 }
 
 @media (prefers-reduced-motion: no-preference) {
   .nav-glow::after {
-    animation: nav-glow-pulse 3s ease-in-out infinite;
+    animation: nav-glow-pulse 4s ease-in-out infinite;
+  }
+
+  /* Blog runs the exact same fade, delayed by precisely half the cycle.
+     Because the fade is symmetric (on -> off -> on, same curve both ways),
+     that delay makes it the exact inverse of the other link at every
+     instant — whatever one is fading down, the other is fading up by the
+     same amount — so they can never both land on fully-on or fully-off at
+     once, while the fade itself stays smooth rather than snapping. */
+  .nav-glow-delayed::after {
+    animation-delay: 2s;
   }
 }
 
 @keyframes nav-glow-pulse {
   0%,
   100% {
-    box-shadow: 0 0 12px 3px rgba(30, 181, 58, 0.9);
+    opacity: 1;
   }
-  33% {
-    box-shadow: 0 0 12px 3px rgba(255, 255, 255, 1);
-  }
-  66% {
-    box-shadow: 0 0 12px 3px rgba(0, 114, 198, 0.9);
+
+  50% {
+    opacity: 0;
   }
 }
 
@@ -792,30 +801,6 @@ h2 span {
   30% {
     translate: 0 -5px;
   }
-}
-
-.team-publications-link {
-  display: inline-block;
-  align-self: flex-start;
-  margin-top: 16px;
-  margin-left: 10px;
-
-  padding: 3px 10px;
-  border-radius: 999px;
-
-  color: var(--navy);
-  font-size: 10px;
-  font-weight: 600;
-
-  transition: background 0.2s ease;
-}
-
-.team-publications-link:hover {
-  background: rgba(0, 59, 92, 0.08);
-}
-
-.team-publications-link.nav-glow::after {
-  inset: -3px -6px;
 }
 
 /* NEWS */
@@ -1688,6 +1673,463 @@ h2 span {
   border: 0;
 }
 
+/* BLOG */
+
+.blog-hero {
+  padding-bottom: 40px;
+}
+
+.blog-hero-inner {
+  max-width: 700px;
+}
+
+.blog-intro {
+  max-width: 500px;
+  margin-top: 30px;
+
+  font-size: 18px;
+  line-height: 1.7;
+  color: var(--grey);
+}
+
+.blog-list {
+  padding-top: 40px;
+  background: var(--off-white);
+}
+
+.blog-status {
+  font-size: 16px;
+  color: var(--grey);
+}
+
+.blog-filter {
+  margin-bottom: 40px;
+}
+
+.blog-filter-label {
+  margin-bottom: 16px;
+
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--grey);
+}
+
+.blog-filter-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.blog-filter-pill {
+  padding: 9px 18px;
+  border: 1px solid #ddd;
+  border-radius: 999px;
+
+  background: white;
+  color: var(--black);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.blog-filter-pill:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.blog-filter-pill.active {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: white;
+}
+
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 34px;
+}
+
+.blog-card {
+  display: flex;
+  flex-direction: column;
+
+  background: white;
+  border-radius: 6px;
+  overflow: hidden;
+
+  box-shadow:
+    0px 1px 0.9px rgba(0, 0, 0, 0.1),
+    0px 2px 1.8px -1px rgba(0, 0, 0, 0.09),
+    0px 4.8px 4.3px -2px rgba(0, 0, 0, 0.07),
+    0px 11.6px 10.4px -3px rgba(0, 0, 0, 0.06),
+    0px 24.5px 22px -4px rgba(0, 0, 0, 0.04);
+
+  transition: transform 0.25s ease;
+}
+
+.blog-card:hover {
+  transform: translateY(-4px);
+}
+
+.blog-card-image {
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: #e8e8e8;
+}
+
+.blog-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.blog-card:hover .blog-card-image img {
+  transform: scale(1.05);
+}
+
+.blog-card-image-placeholder {
+  width: 100%;
+  height: 100%;
+  background: #e8e8e8;
+}
+
+.blog-card-body {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+
+  padding: 24px;
+}
+
+.blog-card-tag {
+  display: inline-block;
+  align-self: flex-start;
+  margin-bottom: 14px;
+
+  padding: 5px 12px;
+  border-radius: 999px;
+
+  background: rgba(0, 114, 198, 0.1);
+  color: var(--blue);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.blog-card h3 {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.blog-card-summary {
+  margin-top: 12px;
+
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--grey);
+
+  flex-grow: 1;
+}
+
+.blog-card-meta {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #eee;
+
+  font-size: 12px;
+  color: var(--grey);
+}
+
+/* BLOG POST (article page) */
+
+.blog-post {
+  max-width: 940px;
+  margin: 0 auto;
+  padding: 160px 8vw 120px;
+}
+
+.blog-post-header {
+  max-width: 700px;
+  margin: 0 auto 40px;
+}
+
+.blog-post-back {
+  display: block;
+  margin-bottom: 28px;
+
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--blue);
+}
+
+.blog-post-header .blog-card-tag {
+  margin-top: 0;
+}
+
+.blog-post-header h1 {
+  margin-top: 16px;
+
+  font-size: clamp(32px, 5vw, 48px);
+  line-height: 1.1;
+  letter-spacing: -1px;
+  font-weight: 600;
+}
+
+.blog-post-meta {
+  display: flex;
+  gap: 10px;
+
+  margin-top: 16px;
+
+  font-size: 13px;
+  color: var(--grey);
+}
+
+.blog-post-meta span:not(:last-child)::after {
+  content: "·";
+  margin-left: 10px;
+}
+
+.blog-post-body {
+  max-width: 700px;
+  margin: 40px auto 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+
+  font-family: "Times New Roman", Georgia, "Cambria", serif;
+  font-size: 18px;
+  line-height: 1.8;
+  color: #333;
+}
+
+/* PHOTO SLIDER */
+
+.photo-slider {
+  margin-top: 40px;
+}
+
+.photo-slider-viewport {
+  position: relative;
+
+  aspect-ratio: 3 / 2;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #e8e8e8;
+}
+
+.photo-slider-track {
+  display: flex;
+  height: 100%;
+  transition: transform 0.35s ease;
+}
+
+.photo-slider-slide {
+  flex: 0 0 100%;
+  height: 100%;
+}
+
+.photo-slider-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo-slider-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--black);
+  cursor: pointer;
+
+  transition: background 0.2s ease;
+}
+
+.photo-slider-arrow:hover {
+  background: white;
+}
+
+.photo-slider-arrow--prev {
+  left: 16px;
+}
+
+.photo-slider-arrow--next {
+  right: 16px;
+}
+
+.photo-slider-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+
+  margin-top: 16px;
+}
+
+.photo-slider-dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+
+  background: #ccc;
+  cursor: pointer;
+
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.photo-slider-dot.active {
+  background: var(--blue);
+  transform: scale(1.3);
+}
+
+/* BLOG CAROUSEL (homepage) */
+
+.blog-carousel-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+
+  margin-bottom: 50px;
+}
+
+.blog-carousel-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.blog-carousel-viewall {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--blue);
+  white-space: nowrap;
+}
+
+.blog-carousel-arrows {
+  display: flex;
+  gap: 10px;
+}
+
+.blog-carousel-arrows button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 40px;
+  height: 40px;
+  border: 1px solid #ddd;
+  border-radius: 50%;
+
+  background: white;
+  color: var(--black);
+  cursor: pointer;
+
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.blog-carousel-arrows button:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.blog-carousel-track {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+
+  /* overflow-x: auto with no overflow-y set still clips vertically, so
+     without this the cards' box-shadow (and hover lift) get cropped flush
+     against the bottom edge instead of having room to breathe. */
+  padding: 4px 4px 24px;
+  margin: -4px -4px 0;
+
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.blog-carousel-track::-webkit-scrollbar {
+  display: none;
+}
+
+.blog-carousel-card {
+  flex: 0 0 320px;
+
+  scroll-snap-align: start;
+
+  background: white;
+  border-radius: 6px;
+  overflow: hidden;
+
+  box-shadow:
+    0px 1px 0.9px rgba(0, 0, 0, 0.1),
+    0px 2px 1.8px -1px rgba(0, 0, 0, 0.09),
+    0px 4.8px 4.3px -2px rgba(0, 0, 0, 0.07),
+    0px 11.6px 10.4px -3px rgba(0, 0, 0, 0.06),
+    0px 24.5px 22px -4px rgba(0, 0, 0, 0.04);
+
+  transition: transform 0.25s ease;
+}
+
+.blog-carousel-card:hover {
+  transform: translateY(-4px);
+}
+
+.blog-carousel-card-image {
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: #e8e8e8;
+}
+
+.blog-carousel-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.blog-carousel-card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  padding: 20px;
+}
+
+.blog-carousel-card-body h3 {
+  margin-top: 4px;
+
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.blog-carousel-card-date {
+  margin-top: 14px;
+
+  font-size: 12px;
+  color: var(--grey);
+}
+
 /* TABLET */
 
 @media (min-width: 769px) and (max-width: 1024px) {
@@ -1865,5 +2307,28 @@ h2 span {
   .viewer-modal {
     max-width: 100%;
     border-radius: 0;
+  }
+
+  .blog-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .blog-post {
+    padding: 120px 6vw 80px;
+  }
+
+  .blog-carousel-heading {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .blog-carousel-card {
+    flex-basis: 260px;
+  }
+
+  .photo-slider-arrow {
+    width: 34px;
+    height: 34px;
   }
 }
