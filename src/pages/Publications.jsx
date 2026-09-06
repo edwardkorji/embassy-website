@@ -62,7 +62,10 @@ function ViewerModal({ publication, onClose }) {
 }
 
 function Publications() {
-  const [publications, setPublications] = useState(null);
+  // Firebase not configured (see .env.example) — nothing to load, so start
+  // in the "empty" state directly instead of setting it from inside the
+  // effect below.
+  const [publications, setPublications] = useState(db ? null : []);
   const [activePublication, setActivePublication] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedCategory = searchParams.get("category") || "";
@@ -104,10 +107,7 @@ function Publications() {
   };
 
   useEffect(() => {
-    if (!db) {
-      setPublications([]);
-      return;
-    }
+    if (!db) return;
 
     const publicationsQuery = query(
       collection(db, "publications"),

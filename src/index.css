@@ -196,7 +196,7 @@ a {
   position: absolute;
   inset: -10% 0 -10% 0; /* extra height so parallax doesn't reveal edges */
 
-  background: url("https://images.unsplash.com/photo-1589394815804-964ed0be2eb5?auto=format&fit=crop&w=2000&q=90");
+  background: url("https://images.unsplash.com/photo-1589394815804-964ed0be2eb5?auto=format&fit=crop&w=2000&q=70");
   background-size: cover;
   background-position: center;
 

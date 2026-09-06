@@ -15,7 +15,10 @@ function formatDate(value) {
 }
 
 function Blog() {
-  const [posts, setPosts] = useState(null);
+  // Firebase not configured (see .env.example) — nothing to load, so start
+  // in the "empty" state directly instead of setting it from inside the
+  // effect below.
+  const [posts, setPosts] = useState(db ? null : []);
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedCategory = searchParams.get("category") || "";
 
@@ -34,10 +37,7 @@ function Blog() {
   };
 
   useEffect(() => {
-    if (!db) {
-      setPosts([]);
-      return;
-    }
+    if (!db) return;
 
     const postsQuery = query(collection(db, "blogs"), orderBy("publishedAt", "desc"));
 
@@ -121,7 +121,7 @@ function Blog() {
                 <Link className="blog-card" to={`/blog/${post.id}`} key={post.id}>
                   <div className="blog-card-image">
                     {post.photos?.[0] ? (
-                      <img src={post.photos[0]} alt="" loading="lazy" />
+                      <img src={post.photos[0]} alt="" loading="lazy" decoding="async" />
                     ) : (
                       <div className="blog-card-image-placeholder" />
                     )}

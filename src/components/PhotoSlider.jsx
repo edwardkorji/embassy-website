@@ -23,6 +23,7 @@ function PhotoSlider({ photos, alt }) {
                 src={src}
                 alt={alt ? `${alt} — photo ${i + 1}` : ""}
                 loading={i === 0 ? "eager" : "lazy"}
+                decoding="async"
               />
             </div>
           ))}

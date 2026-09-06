@@ -17,14 +17,12 @@ function formatDate(value) {
 
 function BlogPost() {
   const { slug } = useParams();
-  // undefined = still loading, null = no such post
-  const [post, setPost] = useState(undefined);
+  // undefined = still loading, null = no such post (or Firebase isn't
+  // configured — see .env.example — in which case there's nothing to load).
+  const [post, setPost] = useState(db && slug ? undefined : null);
 
   useEffect(() => {
-    if (!db || !slug) {
-      setPost(null);
-      return;
-    }
+    if (!db || !slug) return;
 
     const unsubscribe = onSnapshot(
       doc(db, "blogs", slug),

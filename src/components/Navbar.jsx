@@ -40,16 +40,16 @@ function Navbar() {
   const navigate = useNavigate();
   const hasDarkHero = location.pathname === "/";
 
-  const [scrolled, setScrolled] = useState(!hasDarkHero);
+  // Only the dark hero page needs to track scroll position at all — every
+  // other page is always in the "scrolled" (light navbar) state.
+  const [scrolledPastHero, setScrolledPastHero] = useState(false);
+  const scrolled = !hasDarkHero || scrolledPastHero;
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    if (!hasDarkHero) {
-      setScrolled(true);
-      return;
-    }
+    if (!hasDarkHero) return;
 
-    const onScroll = () => setScrolled(window.scrollY > 80);
+    const onScroll = () => setScrolledPastHero(window.scrollY > 80);
     onScroll();
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);

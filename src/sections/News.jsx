@@ -22,7 +22,10 @@ const PAGE_SIZE = 6;
 const PAGE_STEP = 3;
 
 function News() {
-  const [articles, setArticles] = useState(null); // null = still loading
+  // null = still loading. Firebase not configured (see .env.example) means
+  // there's nothing to load, so start in the "empty" state directly instead
+  // of setting it from inside the effect below.
+  const [articles, setArticles] = useState(db ? null : []);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const sectionRef = useRef(null);
 
@@ -32,11 +35,7 @@ function News() {
   };
 
   useEffect(() => {
-    if (!db) {
-      // Firebase isn't configured yet (see .env.example) — nothing to load.
-      setArticles([]);
-      return;
-    }
+    if (!db) return;
 
     const newsQuery = query(
       collection(db, "news"),
@@ -98,7 +97,7 @@ function News() {
               >
                 {article.image && (
                   <div className="news-card-image">
-                    <img src={article.image} alt="" loading="lazy" />
+                    <img src={article.image} alt="" loading="lazy" decoding="async" />
                   </div>
                 )}
 

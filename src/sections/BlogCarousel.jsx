@@ -16,14 +16,14 @@ function formatDate(value) {
 }
 
 function BlogCarousel() {
-  const [posts, setPosts] = useState(null);
+  // Firebase not configured (see .env.example) — nothing to load, so start
+  // in the "empty" state directly instead of setting it from inside the
+  // effect below.
+  const [posts, setPosts] = useState(db ? null : []);
   const trackRef = useRef(null);
 
   useEffect(() => {
-    if (!db) {
-      setPosts([]);
-      return;
-    }
+    if (!db) return;
 
     const postsQuery = query(
       collection(db, "blogs"),
@@ -107,7 +107,7 @@ function BlogCarousel() {
             >
               <div className="blog-carousel-card-image">
                 {post.photos?.[0] ? (
-                  <img src={post.photos[0]} alt="" loading="lazy" />
+                  <img src={post.photos[0]} alt="" loading="lazy" decoding="async" />
                 ) : (
                   <div className="blog-card-image-placeholder" />
                 )}

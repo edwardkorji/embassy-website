@@ -18,4 +18,13 @@ export default defineConfig([
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
   },
+  // Cloud Functions run as CommonJS on Node, not in the browser — without
+  // this, require/exports/module all get flagged as undefined globals.
+  {
+    files: ['functions/**/*.js'],
+    languageOptions: {
+      globals: globals.node,
+      sourceType: 'commonjs',
+    },
+  },
 ])

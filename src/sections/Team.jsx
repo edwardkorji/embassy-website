@@ -59,7 +59,12 @@ function Team() {
           <div className="team-card" key={member.name}>
             <div className="team-photo-wrap">
               <div className="team-photo">
-                <img src={member.image} alt={member.name} loading="lazy" />
+                <img
+                  src={member.image}
+                  alt={member.name}
+                  loading="lazy"
+                  decoding="async"
+                />
               </div>
 
               <span className="team-flag" aria-hidden="true">
