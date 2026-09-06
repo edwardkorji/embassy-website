@@ -1,10 +1,8 @@
 const { onSchedule } = require("firebase-functions/v2/scheduler");
-const { onObjectFinalized } = require("firebase-functions/v2/storage");
 const { defineSecret } = require("firebase-functions/params");
 const { setGlobalOptions } = require("firebase-functions/v2");
 const { initializeApp } = require("firebase-admin/app");
 const { getFirestore, FieldValue } = require("firebase-admin/firestore");
-const { getStorage } = require("firebase-admin/storage");
 const crypto = require("crypto");
 
 initializeApp();
@@ -183,143 +181,11 @@ exports.fetchDiplomacyNews = onSchedule(
   }
 );
 
-// Staff/admin publishing flow: drop a file into the `publications/` folder
-// in Firebase Storage and this creates a stub Firestore doc automatically
-// (title guessed from the filename, file link, file type). The admin then
-// opens that doc in the Firestore console and fills in summary/author/type
-// by hand — that's the one deliberately-manual step. Re-uploading the same
-// path only refreshes the file link, it never overwrites fields the admin
-// has already edited.
-const PUBLICATIONS_PREFIX = "publications/";
-
-function titleFromFilename(filename) {
-  const withoutExtension = filename.replace(/\.[^./]+$/, "");
-  const spaced = withoutExtension.replace(/[-_]+/g, " ").trim();
-  return spaced || filename;
-}
-
-function typeFromPath(path) {
-  if (path.includes("/articles/")) return "article";
-  if (path.includes("/reports/")) return "report";
-  return "report";
-}
-
-exports.ingestPublication = onObjectFinalized(
-  { region: "us-east1", bucket: "sl-embassy-ethiopia.firebasestorage.app" },
-  async (event) => {
-    const filePath = event.data.name;
-    if (!filePath || !filePath.startsWith(PUBLICATIONS_PREFIX)) return;
-
-    const filename = filePath.split("/").pop();
-    if (!filename) return;
-
-    const extension = (filename.split(".").pop() || "").toLowerCase();
-    if (!["pdf", "doc", "docx"].includes(extension)) {
-      console.log(`Skipping unsupported file type: ${filePath}`);
-      return;
-    }
-
-    const bucketName = event.data.bucket;
-    const encodedPath = encodeURIComponent(filePath);
-    const fileUrl = `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodedPath}?alt=media`;
-
-    const docId = crypto.createHash("sha1").update(filePath).digest("hex");
-    const ref = db.collection("publications").doc(docId);
-    const existing = await ref.get();
-
-    if (existing.exists) {
-      await ref.set(
-        {
-          fileUrl,
-          fileType: extension === "doc" ? "docx" : extension,
-          updatedAt: FieldValue.serverTimestamp(),
-        },
-        { merge: true }
-      );
-      console.log(`Refreshed existing publication: ${filePath}`);
-      return;
-    }
-
-    await ref.set({
-      title: titleFromFilename(filename),
-      summary: "",
-      author: "",
-      type: typeFromPath(filePath),
-      fileUrl,
-      fileType: extension === "doc" ? "docx" : extension,
-      storagePath: filePath,
-      publishedAt: FieldValue.serverTimestamp(),
-      updatedAt: FieldValue.serverTimestamp(),
-    });
-
-    console.log(`Created new publication stub for: ${filePath}`);
-  }
-);
-
-// Staff/admin blog-publishing flow: create a folder per post under
-// `blogs/{postSlug}/` in Firebase Storage (the slug becomes the post's URL
-// at /blog/{postSlug}) and drop the post's photos into it — name them
-// 01-*.jpg, 02-*.jpg, etc. to control slider order. Each upload rebuilds the
-// `photos` array from everything currently in that folder, sorted by
-// filename, so re-uploads and multi-file uploads both resolve correctly.
-// The first upload also creates the Firestore stub doc; an admin then opens
-// it in the Firestore console (collection `blogs`, doc id = the slug) and
-// fills in title/category/author/summary/body by hand — that's the one
-// deliberately-manual step, same as publications.
-const BLOGS_PREFIX = "blogs/";
-const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "webp", "gif"];
-
-function slugFromBlogPath(path) {
-  const parts = path.split("/");
-  return parts.length >= 3 ? parts[1] : null;
-}
-
-exports.ingestBlogPhoto = onObjectFinalized(
-  { region: "us-east1", bucket: "sl-embassy-ethiopia.firebasestorage.app" },
-  async (event) => {
-    const filePath = event.data.name;
-    if (!filePath || !filePath.startsWith(BLOGS_PREFIX)) return;
-
-    const slug = slugFromBlogPath(filePath);
-    if (!slug) return;
-
-    const extension = (filePath.split(".").pop() || "").toLowerCase();
-    if (!IMAGE_EXTENSIONS.includes(extension)) {
-      console.log(`Skipping non-image file: ${filePath}`);
-      return;
-    }
-
-    const bucketName = event.data.bucket;
-    const folderPrefix = `${BLOGS_PREFIX}${slug}/`;
-    const [files] = await getStorage().bucket(bucketName).getFiles({ prefix: folderPrefix });
-
-    const photos = files
-      .map((file) => file.name)
-      .filter((name) => IMAGE_EXTENSIONS.includes((name.split(".").pop() || "").toLowerCase()))
-      .sort((a, b) => a.localeCompare(b))
-      .map((name) => `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodeURIComponent(name)}?alt=media`);
-
-    const ref = db.collection("blogs").doc(slug);
-    const existing = await ref.get();
-
-    if (existing.exists) {
-      await ref.set({ photos, updatedAt: FieldValue.serverTimestamp() }, { merge: true });
-      console.log(`Refreshed photos for blog post: ${slug}`);
-      return;
-    }
-
-    await ref.set({
-      title: titleFromFilename(slug),
-      category: "",
-      author: "",
-      summary: "",
-      body: "",
-      photos,
-      publishedAt: FieldValue.serverTimestamp(),
-      updatedAt: FieldValue.serverTimestamp(),
-    });
-
-    console.log(`Created new blog post stub for: ${slug}`);
-  }
-);
-
+// Blog posts, publications and the team roster are now written directly by
+// the admin dashboard (Firestore + Storage client SDKs, gated by security
+// rules requiring a signed-in staff account) — see src/pages/dashboard/.
+// The old Storage-triggered ingest functions that used to create stub docs
+// for an admin to fill in by hand in the Firestore Console have been
+// retired: they watched the same `blogs/**` / `publications/**` paths the
+// dashboard now uploads to, so leaving them running would have created
+// duplicate/racing writes against the dashboard's own docs.

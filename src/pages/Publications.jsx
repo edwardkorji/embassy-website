@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import { Download, ExternalLink, X } from "lucide-react";
 import { db } from "../lib/firebase";
 
 const TYPE_LABELS = {
@@ -26,6 +27,8 @@ function viewerUrl(publication) {
 }
 
 function ViewerModal({ publication, onClose }) {
+  const [loaded, setLoaded] = useState(false);
+
   useEffect(() => {
     const onKeyDown = (e) => e.key === "Escape" && onClose();
     document.addEventListener("keydown", onKeyDown);
@@ -41,21 +44,53 @@ function ViewerModal({ publication, onClose }) {
       <div className="viewer-modal" onClick={(e) => e.stopPropagation()}>
         <div className="viewer-modal-header">
           <h3>{publication.title}</h3>
-          <button
-            type="button"
-            className="viewer-close"
-            onClick={onClose}
-            aria-label="Close"
-          >
-            ×
-          </button>
+
+          <div className="viewer-modal-actions">
+            <a
+              className="viewer-action"
+              href={publication.fileUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Open in new tab"
+            >
+              <ExternalLink size={17} />
+            </a>
+
+            <a
+              className="viewer-action"
+              href={publication.fileUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Download"
+            >
+              <Download size={17} />
+            </a>
+
+            <button
+              type="button"
+              className="viewer-action viewer-close"
+              onClick={onClose}
+              aria-label="Close"
+            >
+              <X size={19} />
+            </button>
+          </div>
         </div>
 
-        <iframe
-          className="viewer-frame"
-          src={viewerUrl(publication)}
-          title={publication.title}
-        />
+        <div className="viewer-frame-wrap">
+          {!loaded && (
+            <div className="viewer-frame-loading">
+              <div className="viewer-frame-spinner" aria-label="Loading document" />
+            </div>
+          )}
+
+          <iframe
+            className="viewer-frame"
+            src={viewerUrl(publication)}
+            title={publication.title}
+            onLoad={() => setLoaded(true)}
+          />
+        </div>
       </div>
     </div>
   );

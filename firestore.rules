@@ -14,23 +14,44 @@ service cloud.firestore {
       allow write: if false;
     }
 
-    // Publications (monthly reports / academic articles) are public-read.
-    // The stub doc is created by the Storage-triggered Cloud Function, and
-    // an admin fills in the summary/author/type by hand in the Firebase
-    // Console — both paths use Admin SDK / IAM access and bypass these
-    // rules, so no client write path is granted here either.
-    match /publications/{publicationId} {
-      allow read: if true;
-      allow write: if false;
+    function isSignedIn() {
+      return request.auth != null;
     }
 
-    // Blog posts follow the same pattern as publications: the
-    // ingestBlogPhoto Cloud Function (Admin SDK) creates the stub doc, and
-    // an admin fills in title/category/summary/body by hand in the
-    // Firestore console — both paths bypass these rules.
+    function isNonEmptyString(value) {
+      return value is string && value.size() > 0;
+    }
+
+    // Publications (monthly reports / academic articles) are public-read.
+    // Signed-in staff (the dashboard) write directly; the shape check below
+    // guards against a client bug corrupting public-facing data — it's not
+    // a defense against a compromised account.
+    match /publications/{publicationId} {
+      allow read: if true;
+      allow create, update: if isSignedIn()
+        && isNonEmptyString(request.resource.data.title)
+        && request.resource.data.type in ["report", "article"]
+        && isNonEmptyString(request.resource.data.fileUrl);
+      allow delete: if isSignedIn();
+    }
+
+    // Blog posts follow the same pattern.
     match /blogs/{blogId} {
       allow read: if true;
-      allow write: if false;
+      allow create, update: if isSignedIn()
+        && isNonEmptyString(request.resource.data.title)
+        && request.resource.data.photos is list;
+      allow delete: if isSignedIn();
+    }
+
+    // Team roster shown on the public "Meet the team" section.
+    match /team/{memberId} {
+      allow read: if true;
+      allow create, update: if isSignedIn()
+        && isNonEmptyString(request.resource.data.name)
+        && isNonEmptyString(request.resource.data.role)
+        && request.resource.data.order is number;
+      allow delete: if isSignedIn();
     }
 
     match /{document=**} {

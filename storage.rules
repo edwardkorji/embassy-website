@@ -2,21 +2,45 @@ rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
-    // Publications (reports/articles) are public-read files; they're only
-    // ever written by an admin through the Firebase Console (which uses
-    // project-owner IAM permissions and bypasses these rules entirely), so
-    // no client write path needs to be granted here.
-    match /publications/{allPaths=**} {
-      allow read: if true;
-      allow write: if false;
+    function isSignedIn() {
+      return request.auth != null;
     }
 
-    // Blog post photos: same pattern — upload directly through the
-    // Firebase Console into blogs/{postSlug}/, the ingestBlogPhoto Cloud
-    // Function (Admin SDK) picks them up and bypasses these rules.
+    function isImageUnder(maxMb) {
+      return request.resource.contentType.matches('image/.*')
+        && request.resource.size < maxMb * 1024 * 1024;
+    }
+
+    function isDocumentUnder(maxMb) {
+      return (
+        request.resource.contentType.matches('application/pdf') ||
+        request.resource.contentType.matches('application/msword') ||
+        request.resource.contentType.matches('application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+      ) && request.resource.size < maxMb * 1024 * 1024;
+    }
+
+    // Blog post photos — public-read, dashboard (signed-in) writes images
+    // only, capped at 15MB (the client compresses before upload, but this
+    // is the backstop against a client bug or a raw upload slipping past it).
     match /blogs/{allPaths=**} {
       allow read: if true;
-      allow write: if false;
+      allow create, update: if isSignedIn() && isImageUnder(15);
+      allow delete: if isSignedIn();
+    }
+
+    // Publications (reports/articles) — public-read, dashboard writes
+    // PDFs/Word docs only, capped at 25MB.
+    match /publications/{allPaths=**} {
+      allow read: if true;
+      allow create, update: if isSignedIn() && isDocumentUnder(25);
+      allow delete: if isSignedIn();
+    }
+
+    // Team member photos.
+    match /team/{allPaths=**} {
+      allow read: if true;
+      allow create, update: if isSignedIn() && isImageUnder(15);
+      allow delete: if isSignedIn();
     }
 
     match /{allPaths=**} {
