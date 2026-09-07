@@ -114,6 +114,25 @@
   padding: 0 8px 24px;
   margin-bottom: 12px;
   border-bottom: 1px solid var(--dash-border);
+  transition: opacity 0.15s ease;
+}
+
+.dashboard-sidebar-logo:hover {
+  opacity: 0.8;
+}
+
+.dashboard-topbar-home {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+}
+
+.dashboard-topbar-home .flag-mark {
+  width: 28px;
+  height: 21px;
 }
 
 .dashboard-sidebar-logo-text {

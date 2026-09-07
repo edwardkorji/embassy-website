@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { LayoutDashboard, Newspaper, FileText, Users, LogOut, Menu, X } from "lucide-react";
 import { auth } from "../lib/firebase";
@@ -55,7 +55,7 @@ function DashboardLayout() {
   return (
     <div className="dashboard-shell">
       <aside className="dashboard-sidebar">
-        <div className="dashboard-sidebar-logo">
+        <Link to="/" className="dashboard-sidebar-logo" aria-label="Go to homepage">
           <div className="flag-mark" aria-hidden="true">
             <span className="green"></span>
             <span className="white"></span>
@@ -65,7 +65,7 @@ function DashboardLayout() {
             Embassy Dashboard
             <span>Sierra Leone in Ethiopia</span>
           </div>
-        </div>
+        </Link>
 
         <NavList />
 
@@ -84,7 +84,13 @@ function DashboardLayout() {
           <Menu size={20} />
         </button>
         <span className="dashboard-topbar-title">{PAGE_TITLES[title] || "Dashboard"}</span>
-        <div style={{ width: 44 }} />
+        <Link to="/" className="dashboard-topbar-home" aria-label="Go to homepage">
+          <div className="flag-mark" aria-hidden="true">
+            <span className="green"></span>
+            <span className="white"></span>
+            <span className="blue"></span>
+          </div>
+        </Link>
       </div>
 
       {drawerOpen && (

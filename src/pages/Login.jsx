@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../lib/firebase";
 import { useAuth } from "../lib/useAuth";
@@ -45,11 +45,11 @@ function Login() {
   return (
     <div className="login-shell">
       <div className="login-card">
-        <div className="flag-mark" aria-hidden="true">
+        <Link to="/" className="flag-mark" aria-label="Go to homepage">
           <span className="green"></span>
           <span className="white"></span>
           <span className="blue"></span>
-        </div>
+        </Link>
 
         <h1 className="login-title">Embassy Dashboard</h1>
         <p className="login-subtitle">Sign in to manage the website</p>
