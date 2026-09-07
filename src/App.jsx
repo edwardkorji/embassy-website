@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
+import LoginFab from "./components/LoginFab";
 import { AuthProvider, ProtectedRoute } from "./lib/AuthContext";
 
 const Home = lazy(() => import("./pages/Home"));
@@ -32,6 +33,7 @@ function AppShell() {
   return (
     <>
       {!isAppRoute && <Navbar />}
+      {!isAppRoute && <LoginFab />}
 
       <Suspense fallback={isAppRoute ? <DashboardSpinner /> : null}>
         <Routes>
