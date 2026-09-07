@@ -71,7 +71,8 @@ a {
 
 .login-fab:hover,
 .login-fab:focus-visible,
-.login-fab:active {
+.login-fab:active,
+.login-fab.expanded {
   width: 152px;
   background: var(--green);
   box-shadow: 0 8px 22px rgba(0, 0, 0, 0.32);
@@ -88,7 +89,8 @@ a {
 
 .login-fab:hover .login-fab-label,
 .login-fab:focus-visible .login-fab-label,
-.login-fab:active .login-fab-label {
+.login-fab:active .login-fab-label,
+.login-fab.expanded .login-fab-label {
   max-width: 110px;
   margin-left: 9px;
   opacity: 1;
@@ -105,7 +107,8 @@ a {
 
   .login-fab:hover,
   .login-fab:focus-visible,
-  .login-fab:active {
+  .login-fab:active,
+  .login-fab.expanded {
     width: 140px;
   }
 }
