@@ -227,13 +227,19 @@ function DashboardBlog() {
             </div>
 
             <div className="dash-list-item-actions">
-              <button type="button" className="btn btn-ghost btn-icon" onClick={() => openEdit(post)}>
+              <button
+                type="button"
+                className="btn btn-ghost btn-icon"
+                onClick={() => openEdit(post)}
+                aria-label={`Edit ${post.title}`}
+              >
                 <Pencil size={16} />
               </button>
               <button
                 type="button"
                 className="btn btn-ghost btn-icon"
                 onClick={() => setConfirmTarget(post)}
+                aria-label={`Delete ${post.title}`}
               >
                 <Trash2 size={16} />
               </button>

@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { LayoutDashboard, Newspaper, FileText, Users, LogOut, Menu, X } from "lucide-react";
 import { auth } from "../lib/firebase";
+import { useModalA11y } from "../lib/useModalA11y";
 import "../dashboard.css";
 
 const NAV_ITEMS = [
@@ -42,6 +43,10 @@ function DashboardLayout() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const drawerRef = useRef(null);
+
+  const closeDrawer = () => setDrawerOpen(false);
+  useModalA11y(drawerRef, { active: drawerOpen, onClose: closeDrawer });
 
   const handleLogout = async () => {
     await signOut(auth);
@@ -95,17 +100,24 @@ function DashboardLayout() {
 
       {drawerOpen && (
         <>
-          <div className="dashboard-drawer-overlay" onClick={() => setDrawerOpen(false)} />
-          <div className="dashboard-drawer">
+          <div className="dashboard-drawer-overlay" onClick={closeDrawer} />
+          <div
+            className="dashboard-drawer"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Dashboard navigation"
+            ref={drawerRef}
+            tabIndex={-1}
+          >
             <button
               type="button"
               className="dashboard-drawer-close"
-              onClick={() => setDrawerOpen(false)}
+              onClick={closeDrawer}
               aria-label="Close menu"
             >
               <X size={20} />
             </button>
-            <NavList onNavigate={() => setDrawerOpen(false)} />
+            <NavList onNavigate={closeDrawer} />
             <button type="button" className="dashboard-logout" onClick={handleLogout}>
               <LogOut size={18} /> Log out
             </button>

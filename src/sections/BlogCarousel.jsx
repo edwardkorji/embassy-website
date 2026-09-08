@@ -107,7 +107,7 @@ function BlogCarousel() {
             >
               <div className="blog-carousel-card-image">
                 {post.photos?.[0] ? (
-                  <img src={post.photos[0]} alt="" loading="lazy" decoding="async" />
+                  <img src={post.photos[0]} alt={post.title} loading="lazy" decoding="async" />
                 ) : (
                   <div className="blog-card-image-placeholder" />
                 )}

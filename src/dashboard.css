@@ -174,7 +174,7 @@
 
 .dash-nav-link.active {
   background: #eaf7ec;
-  color: #148a2e;
+  color: var(--green-deep);
 }
 
 .dash-nav-link svg {
@@ -368,7 +368,7 @@
 }
 
 .btn-primary {
-  background: var(--green);
+  background: var(--green-deep);
   color: #ffffff;
 }
 

@@ -97,7 +97,7 @@ function News() {
               >
                 {article.image && (
                   <div className="news-card-image">
-                    <img src={article.image} alt="" loading="lazy" decoding="async" />
+                    <img src={article.image} alt={article.title} loading="lazy" decoding="async" />
                   </div>
                 )}
 

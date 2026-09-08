@@ -71,6 +71,7 @@ function ImageUploader({
   onChange,
   onBusyChange,
   maxSizeMB = kind === "document" ? 25 : 15,
+  ariaLabel = kind === "document" ? "File" : "Photos",
 }) {
   const [items, setItems] = useState(() =>
     initialUrls.filter(Boolean).map((url) => ({
@@ -213,6 +214,7 @@ function ImageUploader({
           type="file"
           accept="image/*"
           capture="environment"
+          aria-label={`${ariaLabel} — take photo`}
           hidden
           onChange={(e) => {
             addFiles(e.target.files);
@@ -226,6 +228,7 @@ function ImageUploader({
         type="file"
         accept={acceptAttr}
         multiple={multiple && kind === "image"}
+        aria-label={ariaLabel}
         hidden
         onChange={(e) => {
           addFiles(e.target.files);
@@ -294,11 +297,21 @@ function ImageUploader({
               </div>
               <div className="dash-list-item-actions">
                 {item.status === "error" && (
-                  <button type="button" className="btn btn-ghost btn-icon" onClick={() => handleRetry(item)}>
+                  <button
+                    type="button"
+                    className="btn btn-ghost btn-icon"
+                    onClick={() => handleRetry(item)}
+                    aria-label={`Retry uploading ${item.name}`}
+                  >
                     <RefreshCw size={16} />
                   </button>
                 )}
-                <button type="button" className="btn btn-ghost btn-icon" onClick={() => handleRemove(item)}>
+                <button
+                  type="button"
+                  className="btn btn-ghost btn-icon"
+                  onClick={() => handleRemove(item)}
+                  aria-label={`Remove ${item.name}`}
+                >
                   <X size={16} />
                 </button>
               </div>

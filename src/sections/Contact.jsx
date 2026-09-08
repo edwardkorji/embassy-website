@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import CopyEmailButton from "../components/CopyEmailButton";
 import SocialLinks from "../components/SocialLinks";
 
@@ -56,6 +57,11 @@ function Contact() {
             allowFullScreen
           />
         </div>
+      </div>
+
+      <div className="site-footer">
+        <span>© {new Date().getFullYear()} Embassy of Sierra Leone in Ethiopia</span>
+        <Link to="/privacy">Privacy</Link>
       </div>
     </section>
   );

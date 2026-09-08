@@ -121,7 +121,7 @@ function Blog() {
                 <Link className="blog-card" to={`/blog/${post.id}`} key={post.id}>
                   <div className="blog-card-image">
                     {post.photos?.[0] ? (
-                      <img src={post.photos[0]} alt="" loading="lazy" decoding="async" />
+                      <img src={post.photos[0]} alt={post.title} loading="lazy" decoding="async" />
                     ) : (
                       <div className="blog-card-image-placeholder" />
                     )}

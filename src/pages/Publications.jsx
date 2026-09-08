@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import { Download, ExternalLink, X } from "lucide-react";
 import { db } from "../lib/firebase";
+import { useModalA11y } from "../lib/useModalA11y";
 
 const TYPE_LABELS = {
   report: "Monthly Report",
@@ -28,22 +29,30 @@ function viewerUrl(publication) {
 
 function ViewerModal({ publication, onClose }) {
   const [loaded, setLoaded] = useState(false);
+  const modalRef = useRef(null);
+  const titleId = useId();
+  useModalA11y(modalRef, { onClose });
 
   useEffect(() => {
-    const onKeyDown = (e) => e.key === "Escape" && onClose();
-    document.addEventListener("keydown", onKeyDown);
     document.body.style.overflow = "hidden";
     return () => {
-      document.removeEventListener("keydown", onKeyDown);
       document.body.style.overflow = "";
     };
-  }, [onClose]);
+  }, []);
 
   return (
     <div className="viewer-overlay" onClick={onClose}>
-      <div className="viewer-modal" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="viewer-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        ref={modalRef}
+        tabIndex={-1}
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="viewer-modal-header">
-          <h3>{publication.title}</h3>
+          <h3 id={titleId}>{publication.title}</h3>
 
           <div className="viewer-modal-actions">
             <a

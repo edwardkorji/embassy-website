@@ -10,6 +10,7 @@ const Publications = lazy(() => import("./pages/Publications"));
 const Blog = lazy(() => import("./pages/Blog"));
 const BlogPost = lazy(() => import("./pages/BlogPost"));
 const Login = lazy(() => import("./pages/Login"));
+const Privacy = lazy(() => import("./pages/Privacy"));
 const DashboardLayout = lazy(() => import("./components/DashboardLayout"));
 const DashboardHome = lazy(() => import("./pages/dashboard/DashboardHome"));
 const DashboardBlog = lazy(() => import("./pages/dashboard/DashboardBlog"));
@@ -42,6 +43,7 @@ function AppShell() {
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/privacy" element={<Privacy />} />
 
           <Route
             path="/dashboard"

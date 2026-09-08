@@ -241,13 +241,19 @@ function DashboardTeam() {
               >
                 <ChevronDown size={16} />
               </button>
-              <button type="button" className="btn btn-ghost btn-icon" onClick={() => openEdit(member)}>
+              <button
+                type="button"
+                className="btn btn-ghost btn-icon"
+                onClick={() => openEdit(member)}
+                aria-label={`Edit ${member.name}`}
+              >
                 <Pencil size={16} />
               </button>
               <button
                 type="button"
                 className="btn btn-ghost btn-icon"
                 onClick={() => setConfirmTarget(member)}
+                aria-label={`Delete ${member.name}`}
               >
                 <Trash2 size={16} />
               </button>

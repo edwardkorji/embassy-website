@@ -222,13 +222,19 @@ function DashboardPublications() {
             </div>
 
             <div className="dash-list-item-actions">
-              <button type="button" className="btn btn-ghost btn-icon" onClick={() => openEdit(pub)}>
+              <button
+                type="button"
+                className="btn btn-ghost btn-icon"
+                onClick={() => openEdit(pub)}
+                aria-label={`Edit ${pub.title}`}
+              >
                 <Pencil size={16} />
               </button>
               <button
                 type="button"
                 className="btn btn-ghost btn-icon"
                 onClick={() => setConfirmTarget(pub)}
+                aria-label={`Delete ${pub.title}`}
               >
                 <Trash2 size={16} />
               </button>
